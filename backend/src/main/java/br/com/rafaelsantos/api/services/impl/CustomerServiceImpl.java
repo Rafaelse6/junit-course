@@ -4,6 +4,7 @@ import br.com.rafaelsantos.api.domain.Customer;
 import br.com.rafaelsantos.api.domain.dto.CustomerDTO;
 import br.com.rafaelsantos.api.repositories.CustomerRepository;
 import br.com.rafaelsantos.api.services.CustomerService;
+import br.com.rafaelsantos.api.services.exceptions.DataIntegrityViolationException;
 import br.com.rafaelsantos.api.services.exceptions.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer create(CustomerDTO obj) {
+        findByEmail(obj);
         return repository.save(mapper.map(obj, Customer.class));
+    }
+
+    public void findByEmail(CustomerDTO obj){
+        Optional<Customer> customer = repository.findByEmail(obj.getEmail());
+        if(customer.isPresent()){
+            throw new DataIntegrityViolationException("Email already in use");
+        }
     }
 }
