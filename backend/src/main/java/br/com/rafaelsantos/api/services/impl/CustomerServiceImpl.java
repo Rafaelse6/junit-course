@@ -44,6 +44,12 @@ public class CustomerServiceImpl implements CustomerService {
         return repository.save(mapper.map(obj, Customer.class));
     }
 
+    @Override
+    public void delete(Integer id) {
+        findById(id);
+        repository.deleteById(id);
+    }
+
     public void findByEmail(CustomerDTO obj){
         Optional<Customer> customer = repository.findByEmail(obj.getEmail());
         if(customer.isPresent() && !customer.get().getId().equals(obj.getId())){
