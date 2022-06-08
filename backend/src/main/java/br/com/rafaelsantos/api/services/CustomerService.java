@@ -9,6 +9,7 @@ public interface CustomerService {
 
     Customer findById(Integer id);
     List<Customer> findAll();
-
     Customer create(CustomerDTO obj);
+
+    Customer update(CustomerDTO obj);
 }

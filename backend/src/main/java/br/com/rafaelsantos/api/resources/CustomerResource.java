@@ -38,4 +38,10 @@ public class CustomerResource {
                 .fromCurrentRequest().path("/{id}").buildAndExpand(service.create(obj).getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<CustomerDTO> update(@PathVariable Integer id, @RequestBody CustomerDTO obj){
+        obj.setId(id);
+        return ResponseEntity.ok().body(mapper.map(service.update(obj), CustomerDTO.class));
+    }
 }

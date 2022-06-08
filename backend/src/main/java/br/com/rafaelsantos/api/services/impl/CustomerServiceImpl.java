@@ -38,9 +38,15 @@ public class CustomerServiceImpl implements CustomerService {
         return repository.save(mapper.map(obj, Customer.class));
     }
 
+    @Override
+    public Customer update(CustomerDTO obj) {
+        findByEmail(obj);
+        return repository.save(mapper.map(obj, Customer.class));
+    }
+
     public void findByEmail(CustomerDTO obj){
         Optional<Customer> customer = repository.findByEmail(obj.getEmail());
-        if(customer.isPresent()){
+        if(customer.isPresent() && !customer.get().getId().equals(obj.getId())){
             throw new DataIntegrityViolationException("Email already in use");
         }
     }
