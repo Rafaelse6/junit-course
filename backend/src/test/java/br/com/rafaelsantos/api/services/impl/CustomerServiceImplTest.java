@@ -3,6 +3,7 @@ package br.com.rafaelsantos.api.services.impl;
 import br.com.rafaelsantos.api.domain.Customer;
 import br.com.rafaelsantos.api.domain.dto.CustomerDTO;
 import br.com.rafaelsantos.api.repositories.CustomerRepository;
+import br.com.rafaelsantos.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -55,6 +56,18 @@ class CustomerServiceImplTest {
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
 
+    }
+
+    @Test
+    void whenFindByIdThenReturnObjectNotFoundException(){
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Object not found"));
+
+        try{
+            service.findById(ID);
+        }catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals("Object not found", ex.getMessage());
+        }
     }
 
     @Test
