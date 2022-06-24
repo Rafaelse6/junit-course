@@ -116,7 +116,17 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void update() {
+    void whenUpdateThenReturnSuccess() {
+        when(repository.save(any())).thenReturn(customer);
+
+        Customer response = service.update(customerDTO);
+
+        assertNotNull(response);
+        assertEquals(Customer.class, response.getClass());
+        assertEquals(ID, response.getId());
+        assertEquals(NAME, response.getName());
+        assertEquals(EMAIL, response.getEmail());
+        assertEquals(PASSWORD, response.getPassword());
     }
 
     @Test
