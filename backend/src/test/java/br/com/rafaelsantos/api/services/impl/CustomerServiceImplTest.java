@@ -28,6 +28,7 @@ class CustomerServiceImplTest {
     private static final String EMAIL    = "rafael@email.com";
     private static final String PASSWORD = "123";
     private static final int INDEX = 0;
+    public static final String EMAIL_ALREADY_IN_USE = "Email already in use";
     @InjectMocks
     private CustomerServiceImpl service;
 
@@ -111,7 +112,7 @@ class CustomerServiceImplTest {
             service.create(customerDTO);
         }catch (Exception ex){
             assertEquals(DataIntegrityViolationException.class, ex.getClass());
-            assertEquals("Email already in use", ex.getMessage());
+            assertEquals(EMAIL_ALREADY_IN_USE, ex.getMessage());
         }
     }
 
@@ -127,6 +128,19 @@ class CustomerServiceImplTest {
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenUpdateThenReturnADataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalCustomer);
+
+        try {
+            optionalCustomer.get().setId(2);
+            service.create(customerDTO);
+        }catch (Exception ex){
+            assertEquals(DataIntegrityViolationException.class, ex.getClass());
+            assertEquals(EMAIL_ALREADY_IN_USE, ex.getMessage());
+        }
     }
 
     @Test
