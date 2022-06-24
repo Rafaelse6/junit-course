@@ -3,6 +3,7 @@ package br.com.rafaelsantos.api.services.impl;
 import br.com.rafaelsantos.api.domain.Customer;
 import br.com.rafaelsantos.api.domain.dto.CustomerDTO;
 import br.com.rafaelsantos.api.repositories.CustomerRepository;
+import br.com.rafaelsantos.api.services.exceptions.DataIntegrityViolationException;
 import br.com.rafaelsantos.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -100,6 +100,19 @@ class CustomerServiceImplTest {
        assertEquals(NAME, response.getName());
        assertEquals(EMAIL, response.getEmail());
        assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void whenCreateThenReturnADataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalCustomer);
+
+        try {
+            optionalCustomer.get().setId(2);
+            service.create(customerDTO);
+        }catch (Exception ex){
+            assertEquals(DataIntegrityViolationException.class, ex.getClass());
+            assertEquals("Email already in use", ex.getMessage());
+        }
     }
 
     @Test
