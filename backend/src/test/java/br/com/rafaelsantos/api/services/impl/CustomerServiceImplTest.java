@@ -29,6 +29,7 @@ class CustomerServiceImplTest {
     private static final String PASSWORD = "123";
     private static final int INDEX = 0;
     public static final String EMAIL_ALREADY_IN_USE = "Email already in use";
+    public static final String OBJECT_NOT_FOUND = "Object not found";
     @InjectMocks
     private CustomerServiceImpl service;
 
@@ -64,13 +65,13 @@ class CustomerServiceImplTest {
 
     @Test
     void whenFindByIdThenReturnObjectNotFoundException(){
-        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Object not found"));
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
 
         try{
             service.findById(ID);
         }catch (Exception ex) {
             assertEquals(ObjectNotFoundException.class, ex.getClass());
-            assertEquals("Object not found", ex.getMessage());
+            assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
         }
     }
 
@@ -150,6 +151,18 @@ class CustomerServiceImplTest {
         service.delete(ID);
 
         verify(repository, times(1)).deleteById(anyInt());
+    }
+
+    @Test
+    void deleteWithObjectNotFoundException(){
+        when(repository.findById(anyInt()))
+                .thenThrow(new ObjectNotFoundException(OBJECT_NOT_FOUND));
+        try {
+            service.delete(ID);
+        }catch (Exception ex){
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJECT_NOT_FOUND, ex.getMessage());
+        }
     }
 
     private void startCustomer(){
