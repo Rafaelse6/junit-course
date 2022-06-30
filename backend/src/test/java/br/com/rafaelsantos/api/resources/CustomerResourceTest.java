@@ -35,8 +35,9 @@ class CustomerResourceTest {
 
     private static final String PASSWORD = "123";
 
-    private Customer customer;
-    private CustomerDTO customerDTO;
+    private Customer customer = new Customer();
+
+    private CustomerDTO customerDTO = new CustomerDTO();
 
     @InjectMocks
     private CustomerResource resource;
