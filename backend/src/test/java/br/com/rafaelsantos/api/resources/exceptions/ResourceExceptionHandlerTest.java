@@ -1,5 +1,6 @@
 package br.com.rafaelsantos.api.resources.exceptions;
 
+import br.com.rafaelsantos.api.services.exceptions.DataIntegrityViolationException;
 import br.com.rafaelsantos.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,12 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ResourceExceptionHandlerTest {
 
     private static final String OBJECT_NOT_FOUND = "Object not found";
+    private static final String EMAIL_ALREADY_IN_USE = "Email already in use";
     @InjectMocks
     private ResourceExceptionHandler exceptionHandler;
 
@@ -37,9 +41,23 @@ class ResourceExceptionHandlerTest {
         assertEquals(ResponseEntity.class, response.getClass());
         assertEquals(StandardError.class, response.getBody().getClass());
         assertEquals(OBJECT_NOT_FOUND, response.getBody().getError());
+        assertNotEquals("/user/2", response.getBody().getPath());
+        assertNotEquals(LocalDateTime.now(),response.getBody().getTimestamp());
     }
 
     @Test
     void dataIntegrityViolationException() {
+        ResponseEntity<StandardError> response = exceptionHandler
+                .dataIntegrityViolationException(
+                        new DataIntegrityViolationException(EMAIL_ALREADY_IN_USE),
+                        new MockHttpServletRequest());
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(400, response.getBody().getStatus());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(StandardError.class, response.getBody().getClass());
+        assertEquals(EMAIL_ALREADY_IN_USE, response.getBody().getError());
     }
 }
